@@ -72,7 +72,7 @@ public class AuthenticationService {
             user = Users.builder()
                     .username(request.getEmail())        // Puoi usare l'email come username
                     .email(request.getEmail())           // Salvi anche l'email
-                    .auth_provider(AuthProvider.GOOGLE)  // <-- IMPORTANTE
+                    .auth_provider(AuthProvider.google)  // <-- IMPORTANTE
                     .provider_id(request.getGoogleId())  // <-- opzionale, utile per tracciamento
                     .avatar_url(request.getImageUrl())   // <-- opzionale, per immagine profilo
                     .password_hash("")                   // Nessuna password (login social)
