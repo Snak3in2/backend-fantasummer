@@ -1,54 +1,36 @@
 package com.alibou.security.classi.users;
 
-import com.alibou.security.auth.RegisterRequest;
+import com.alibou.security.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/utenti")
 @RequiredArgsConstructor
 @CrossOrigin
 public class UserController {
+    private final UserService userService;
 
-    private final UserService service;
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getMyProfile(@AuthenticationPrincipal UserDetails userDetails) {
+        // userDetails.getUsername() di solito è l'email
+        Users user = userService.getByEmail(userDetails.getUsername());
 
-    @PostMapping("/create")
-    public ResponseEntity<Map<String, String>> createUser(@RequestBody RegisterRequest request) {
-        Map<String, String> response = new HashMap<>();
-        try {
-            service.createUser(request);
-            response.put("message", "Utente creato con successo.");
-            return ResponseEntity.ok(response);
-        } catch (IllegalStateException e) {
-            response.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
         }
-    }
 
-
-    @DeleteMapping
-    public ResponseEntity<?> deleteUsers(@RequestBody List<Integer> userIds) {
-        service.eliminaUtenti(userIds);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Users>> getUtenti() {
-        List<Users> utenti = service.getAllUtenti();
-        return ResponseEntity.ok(utenti);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Users> updateUser(
-            @PathVariable Integer id,
-            @RequestBody Users updatedUsers
-    ) {
-        Users users = service.updateUser(id, updatedUsers);
-        return ResponseEntity.ok(users);
+        UserDTO userDTO = new UserDTO(
+                user.getUsername(),
+                user.getEmail(),
+                user.getAuth_provider(),
+                user.getAvatar_url(),
+                user.getTotal_points()
+        );
+        return ResponseEntity.ok(userDTO);
     }
 }

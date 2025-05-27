@@ -68,7 +68,7 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         return request -> {
             CorsConfiguration config = new CorsConfiguration();
-            config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+            config.setAllowedHeaders(List.of("Authorization", "Content-Type", "ngrok-skip-browser-warning"));
             config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
             String origin = request.getHeader("Origin");
